@@ -1,118 +1,103 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Smart Warehouse Onboarding</title>
+  <meta name="description" content="Automated client onboarding for flexible storage solutions" />
   <link rel="stylesheet" href="styles.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
-  <div class="deck" id="deck">
-  <div class="progress" id="progress"></div>
-  <div class="slide-counter" id="counter">1 / 7</div>
+  <div class="presentation">
+    <!-- Slide 1: Hero -->
+    <section class="slide hero active">
+      <div class="content">
+        <h1>Smart Onboarding</h1>
+        <p>Instant storage matching for warehouse operators</p>
+        <div class="animation-placeholder"></div>
+      </div>
+    </section>
 
-  <!-- 1 Hero -->
-  <section class="slide active" data-slide="0">
-    <div class="content hero-content">
-      <p class="eyebrow">Автоматизация онбординга</p>
-      <h1>Умный подбор<br />складского места</h1>
-      <p class="lead">Клиент пишет «нужно ~15 м²» — система за секунды собирает варианты по всем складам оператора.</p>
-      <p class="hint">← → или свайп · пробел — далее</p>
-    </div>
-    <div class="hero-glow" aria-hidden="true"></div>
-  </section>
+    <!-- Slide 2: The Problem -->
+    <section class="slide problem">
+      <div class="content">
+        <h2>The Problem</h2>
+        <p>Customers ask for <strong>15m²</strong> — but managers don’t know what’s available across locations.</p>
+        <ul class="problem-list">
+          <li>❌ Manual, slow responses</li>
+          <li>❌ Limited to one facility</li>
+          <li>❌ Missed opportunities</li>
+        </ul>
+        <div class="animation-placeholder"></div>
+      </div>
+    </section>
 
-  <!-- 2 Problem -->
-  <section class="slide" data-slide="1">
-    <div class="content">
-      <p class="eyebrow">Проблема</p>
-      <h2>Менеджер теряется в конфигурации</h2>
-      <p class="lead">Редко есть одна комната ровно на 15 м². Чаще — набор боксов 3 + 4 + 8. Искать вручную по этажам и филиалам — долго.</p>
-      <ul class="pain-list">
-        <li>Запрос «с потолка», без точной площади</li>
-        <li>Один филиал не видит свободные места соседнего</li>
-        <li>Клиент уходит, пока ищут комбинацию</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- 3 Client request -->
-  <section class="slide" data-slide="2">
-    <div class="content">
-      <p class="eyebrow">Запрос клиента</p>
-      <h2>«Мне нужно около 15 м²»</h2>
-      <div class="request-panel">
-        <div class="request-input-wrap">
-          <label for="areaInput">Запрошенная площадь</label>
-          <div class="request-row">
-            <input type="range" id="areaInput" min="5" max="40" value="15" step="1" />
-            <output id="areaValue">15</output>
-            <span>м²</span>
+    <!-- Slide 3: The Solution -->
+    <section class="slide solution">
+      <div class="content">
+        <h2>The Solution</h2>
+        <p>Automated matching across all facilities</p>
+        <div class="config-demo">
+          <div class="request">Client requests: <strong>15m²</strong></div>
+          <div class="range">Search range: <strong>7.5–22.5m²</strong></div>
+          <div class="options">
+            <!-- Configurations inserted by JavaScript -->
           </div>
         </div>
-        <div class="range-badge">
-          Диапазон поиска ±50%: <strong id="rangeMin">7.5</strong> – <strong id="rangeMax">22.5</strong> м²
+      </div>
+    </section>
+
+    <!-- Slide 4: Multi-Location Aggregation -->
+    <section class="slide aggregation">
+      <div class="content">
+        <h2>All Locations, One View</h2>
+        <p>Aggregate inventory across multiple warehouses</p>
+        <div class="map-demo">
+          <div class="map-placeholder"></div>
+          <div class="legend">
+            <div class="marker available"></div> <span>Available</span>
+            <div class="marker occupied"></div> <span>Occupied</span>
+          </div>
         </div>
-        <p class="small">Клиент обычно не знает точную цифру — показываем всё, что попадает в коридор.</p>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- 4 Configurations -->
-  <section class="slide" data-slide="3">
-    <div class="content wide">
-      <p class="eyebrow">Подбор конфигураций</p>
-      <h2>Одна комната или комбинация боксов</h2>
-      <p class="lead">Система перебирает доступные юниты и предлагает лучшие варианты.</p>
-      <div class="config-grid" id="configGrid"></div>
-    </div>
-  </section>
-
-  <!-- 5 Multi-warehouse -->
-  <section class="slide" data-slide="4">
-    <div class="content wide">
-      <p class="eyebrow">Все склады оператора</p>
-      <h2>Один запрос — вся сеть</h2>
-      <p class="lead">Не нужно звонить в центральный офис: инвентарь агрегирован по локациям.</p>
-      <div class="warehouse-list" id="warehouseList"></div>
-    </div>
-  </section>
-
-  <!-- 6 Radius -->
-  <section class="slide" data-slide="5">
-    <div class="content wide">
-      <p class="eyebrow">Радиус 10 км</p>
-      <h2>Рядом с клиентом — и чуть дальше</h2>
-      <p class="lead">В Барселоне склад через квартал часто так же удобен, как «под домом».</p>
-      <div class="map-scene" id="mapScene">
-        <div class="map-ring"></div>
-        <div class="map-client" title="Точка клиента">Вы</div>
+    <!-- Slide 5: Radius Search -->
+    <section class="slide radius">
+      <div class="content">
+        <h2>Radius Search: 10km</h2>
+        <p>Find options near the client’s preferred location</p>
+        <div class="radius-demo">
+          <div class="client-pin"></div>
+          <div class="search-ring"></div>
+          <div class="warehouse-pin" style="top: 30%; left: 40%"></div>
+          <div class="warehouse-pin" style="top: 50%; left: 60%"></div>
+          <div class="warehouse-pin" style="top: 70%; left: 50%"></div>
+        </div>
       </div>
-      <div class="radius-legend" id="radiusLegend"></div>
-    </div>
-  </section>
+    </section>
 
-  <!-- 7 Benefits -->
-  <section class="slide" data-slide="6">
-    <div class="content">
-      <p class="eyebrow">Итог</p>
-      <h2>Быстрее · шире · точнее</h2>
-      <div class="benefits">
-        <article><span>⚡</span><h3>Мгновенный ответ</h3><p>Вместо «перезвоним завтра»</p></article>
-        <article><span>🧩</span><h3>Умные комбинации</h3><p>7 + 8 = 15, 3×3 + 4 = 13…</p></article>
-        <article><span>📍</span><h3>Все филиалы</h3><p>±50% площади и 10 км радиус</p></article>
+    <!-- Slide 6: Benefits -->
+    <section class="slide benefits">
+      <div class="content">
+        <h2>Benefits</h2>
+        <div class="benefits-grid">
+          <div class="benefit-card">
+            <h3>⏱️ Faster Response</h3>
+            <p>Instant quotes instead of hours or days</p>
+          </div>
+          <div class="benefit-card">
+            <h3>🎯 Higher Conversion</h3>
+            <p>More deals closed with instant options</p>
+          </div>
+          <div class="benefit-card">
+            <h3>📍 Network-wide search</h3>
+            <p>±50% area matching within a 10km radius</p>
+          </div>
+        </div>
       </div>
-      <p class="brand">Пример сегмента: self-storage · zebrabox.es и аналоги</p>
-    </div>
-  </section>
-
-  <nav class="nav" aria-label="Навигация по слайдам">
-    <button type="button" id="prevBtn" aria-label="Предыдущий слайд">←</button>
-    <button type="button" id="nextBtn" aria-label="Следующий слайд">→</button>
-  </nav>
+    </section>
   </div>
 
   <script src="script.js"></script>
