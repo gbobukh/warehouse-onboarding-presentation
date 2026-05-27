@@ -1,98 +1,218 @@
-// Slide transitions
-const slides = document.querySelectorAll('.slide');
-let currentSlide = 0;
+(function () {
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  let current = 0;
+  let autoTimer = null;
 
-function showSlide(index) {
-  slides.forEach((slide) => {
-    slide.classList.remove('active');
-  });
-  slides[index].classList.add('active');
-}
+  const progress = document.getElementById('progress');
+  const counter = document.getElementById('counter');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const areaInput = document.getElementById('areaInput');
+  const areaValue = document.getElementById('areaValue');
+  const rangeMin = document.getElementById('rangeMin');
+  const rangeMax = document.getElementById('rangeMax');
+  const configGrid = document.getElementById('configGrid');
+  const warehouseList = document.getElementById('warehouseList');
+  const mapScene = document.getElementById('mapScene');
+  const radiusLegend = document.getElementById('radiusLegend');
 
-function nextSlide() {
-  currentSlide = (currentSlide + 1) % slides.length;
-  showSlide(currentSlide);
-}
+  const availableUnits = [3, 3.3, 4, 5, 6, 7, 8, 10, 12, 15, 18, 20];
 
-function prevSlide() {
-  currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-  showSlide(currentSlide);
-}
+  const warehouses = [
+    { name: 'Eixample — Carrer de Mallorca', distance: '0.8 km', units: '4 options', primary: true },
+    { name: 'Gràcia — Travessera', distance: '2.1 km', units: '2 options', primary: false },
+    { name: 'Poblenou — Av. Diagonal', distance: '4.5 km', units: '3 options', primary: false },
+    { name: 'Sants — Pl. Espanya', distance: '6.2 km', units: '1 option', primary: false },
+    { name: 'Sant Adrià', distance: '9.1 km', units: '2 options', primary: false },
+  ];
 
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowRight' || e.key === ' ') {
-    e.preventDefault();
-    nextSlide();
+  const mapPins = [
+    { top: '42%', left: '48%', label: 'Eixample' },
+    { top: '28%', left: '62%', label: 'Gràcia' },
+    { top: '58%', left: '70%', label: 'Poblenou' },
+    { top: '72%', left: '38%', label: 'Sants' },
+    { top: '35%', left: '78%', label: 'Sant Adrià' },
+  ];
+
+  function showSlide(index) {
+    current = ((index % total) + total) % total;
+    slides.forEach((s, i) => s.classList.toggle('active', i === current));
+    progress.style.width = `${((current + 1) / total) * 100}%`;
+    counter.textContent = `${current + 1} / ${total}`;
+    if (current === 3) renderConfigs(getRequestedArea());
+    if (current === 4) renderWarehouses();
+    if (current === 5) renderMap();
   }
-  if (e.key === 'ArrowLeft') {
-    e.preventDefault();
-    prevSlide();
+
+  function next() {
+    showSlide(current + 1);
   }
-});
 
-let slideInterval = setInterval(nextSlide, 8000);
+  function prev() {
+    showSlide(current - 1);
+  }
 
-document.querySelector('.presentation').addEventListener('mouseenter', () => {
-  clearInterval(slideInterval);
-});
+  function getRequestedArea() {
+    return Number(areaInput?.value || 15);
+  }
 
-document.querySelector('.presentation').addEventListener('mouseleave', () => {
-  slideInterval = setInterval(nextSlide, 8000);
-});
+  function updateRange() {
+    const area = getRequestedArea();
+    if (areaValue) areaValue.textContent = String(area);
+    if (rangeMin) rangeMin.textContent = (area * 0.5).toFixed(1);
+    if (rangeMax) rangeMax.textContent = (area * 1.5).toFixed(1);
+    renderConfigs(area);
+  }
 
-showSlide(0);
+  function generateConfigs(requestedArea) {
+    const minArea = requestedArea * 0.5;
+    const maxArea = requestedArea * 1.5;
+    const seen = new Set();
+    const configs = [];
 
-function generateConfigs(requestedArea) {
-  const minArea = requestedArea * 0.5;
-  const maxArea = requestedArea * 1.5;
-  const availableUnits = [3, 3.3, 4, 5, 6, 7, 8, 10, 12, 15, 20];
-  const configs = [];
-
-  availableUnits.forEach((unit) => {
-    if (unit >= minArea && unit <= maxArea) {
-      configs.push({ units: [unit], total: unit });
+    function add(units) {
+      const totalArea = units.reduce((a, b) => a + b, 0);
+      const key = units.slice().sort((a, b) => a - b).join('+');
+      if (totalArea < minArea || totalArea > maxArea || seen.has(key)) return;
+      seen.add(key);
+      configs.push({ units: units.slice(), total: Math.round(totalArea * 10) / 10 });
     }
-  });
 
-  for (let i = 0; i < availableUnits.length; i++) {
-    for (let j = i; j < availableUnits.length; j++) {
-      const total = availableUnits[i] + availableUnits[j];
-      if (total >= minArea && total <= maxArea) {
-        configs.push({ units: [availableUnits[i], availableUnits[j]], total });
+    for (const u of availableUnits) add([u]);
+
+    for (let i = 0; i < availableUnits.length; i++) {
+      for (let j = i; j < availableUnits.length; j++) {
+        add([availableUnits[i], availableUnits[j]]);
       }
     }
-  }
 
-  for (let i = 0; i < availableUnits.length; i++) {
-    for (let j = i; j < availableUnits.length; j++) {
-      for (let k = j; k < availableUnits.length; k++) {
-        const total = availableUnits[i] + availableUnits[j] + availableUnits[k];
-        if (total >= minArea && total <= maxArea && total <= requestedArea * 1.3) {
-          configs.push({ units: [availableUnits[i], availableUnits[j], availableUnits[k]], total });
+    for (let i = 0; i < availableUnits.length; i++) {
+      for (let j = i; j < availableUnits.length; j++) {
+        for (let k = j; k < availableUnits.length; k++) {
+          add([availableUnits[i], availableUnits[j], availableUnits[k]]);
         }
       }
     }
+
+    return configs
+      .sort((a, b) => Math.abs(a.total - requestedArea) - Math.abs(b.total - requestedArea))
+      .slice(0, 6);
   }
 
-  return configs
-    .sort((a, b) => Math.abs(a.total - requestedArea) - Math.abs(b.total - requestedArea))
-    .slice(0, 6);
-}
+  function renderConfigs(area) {
+    if (!configGrid) return;
+    const configs = generateConfigs(area);
+    configGrid.innerHTML = configs
+      .map((c, i) => {
+        const isSingle = c.units.length === 1;
+        const unitsStr = c.units.map((u) => `${u} m²`).join(' + ');
+        return `
+          <div class="config-card" style="animation-delay:${i * 0.08}s">
+            <div class="total">${c.total} m²</div>
+            <div class="units">${unitsStr}</div>
+            <span class="tag">${isSingle ? 'Single unit' : 'Combined units'}</span>
+          </div>`;
+      })
+      .join('');
+  }
 
-function displayConfigs() {
-  const configs = generateConfigs(15);
-  const optionsContainer = document.querySelector('.options');
-  if (!optionsContainer) return;
+  function renderWarehouses() {
+    if (!warehouseList || warehouseList.children.length) return;
+    warehouseList.innerHTML = warehouses
+      .map(
+        (w, i) => `
+        <div class="warehouse-row" style="animation-delay:${i * 0.1}s">
+          <div>
+            <div class="name">${w.name}${w.primary ? ' · at client location' : ''}</div>
+            <div class="meta">${w.distance} from request point</div>
+          </div>
+          <div class="avail">${w.units}</div>
+        </div>`
+      )
+      .join('');
+  }
 
-  optionsContainer.innerHTML = '';
+  function renderMap() {
+    if (!mapScene || mapScene.querySelector('.map-pin')) return;
+    mapPins.forEach((p, i) => {
+      const el = document.createElement('div');
+      el.className = 'map-pin';
+      el.style.top = p.top;
+      el.style.left = p.left;
+      el.dataset.label = p.label;
+      el.style.animationDelay = `${0.2 + i * 0.15}s`;
+      mapScene.appendChild(el);
+    });
+    if (radiusLegend) {
+      radiusLegend.innerHTML = [
+        'At request point: 2 configurations',
+        'Within 10 km: 8 more',
+        'Best match: 15 m² (7 + 8)',
+      ]
+        .map((t) => `<span class="legend-chip">${t}</span>`)
+        .join('');
+    }
+  }
 
-  configs.forEach((config) => {
-    const option = document.createElement('div');
-    option.className = 'option';
-    const unitsText = config.units.map((u) => `${u}m²`).join(' + ');
-    option.innerHTML = `<strong>${config.total}m²</strong> — ${unitsText}`;
-    optionsContainer.appendChild(option);
+  function startAuto() {
+    stopAuto();
+    autoTimer = setInterval(next, 10000);
+  }
+
+  function stopAuto() {
+    if (autoTimer) clearInterval(autoTimer);
+    autoTimer = null;
+  }
+
+  prevBtn?.addEventListener('click', () => {
+    prev();
+    startAuto();
   });
-}
+  nextBtn?.addEventListener('click', () => {
+    next();
+    startAuto();
+  });
 
-document.addEventListener('DOMContentLoaded', displayConfigs);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+      e.preventDefault();
+      next();
+      startAuto();
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+      e.preventDefault();
+      prev();
+      startAuto();
+    }
+  });
+
+  areaInput?.addEventListener('input', updateRange);
+
+  document.getElementById('deck')?.addEventListener('mouseenter', stopAuto);
+  document.getElementById('deck')?.addEventListener('mouseleave', startAuto);
+
+  let touchStartX = 0;
+  document.addEventListener(
+    'touchstart',
+    (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    },
+    { passive: true }
+  );
+  document.addEventListener(
+    'touchend',
+    (e) => {
+      const dx = e.changedTouches[0].screenX - touchStartX;
+      if (Math.abs(dx) < 50) return;
+      if (dx < 0) next();
+      else prev();
+      startAuto();
+    },
+    { passive: true }
+  );
+
+  updateRange();
+  showSlide(0);
+  startAuto();
+})();

@@ -4,100 +4,115 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Smart Warehouse Onboarding</title>
-  <meta name="description" content="Automated client onboarding for flexible storage solutions" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
-  <div class="presentation">
-    <!-- Slide 1: Hero -->
-    <section class="slide hero active">
-      <div class="content">
-        <h1>Smart Onboarding</h1>
-        <p>Instant storage matching for warehouse operators</p>
-        <div class="animation-placeholder"></div>
-      </div>
-    </section>
+  <div class="deck" id="deck">
+  <div class="progress" id="progress"></div>
+  <div class="slide-counter" id="counter">1 / 7</div>
 
-    <!-- Slide 2: The Problem -->
-    <section class="slide problem">
-      <div class="content">
-        <h2>The Problem</h2>
-        <p>Customers ask for <strong>15m²</strong> — but managers don’t know what’s available across locations.</p>
-        <ul class="problem-list">
-          <li>❌ Manual, slow responses</li>
-          <li>❌ Limited to one facility</li>
-          <li>❌ Missed opportunities</li>
-        </ul>
-        <div class="animation-placeholder"></div>
-      </div>
-    </section>
+  <!-- 1 Hero -->
+  <section class="slide active" data-slide="0">
+    <div class="content hero-content">
+      <p class="eyebrow">Onboarding automation</p>
+      <h1>Smart storage<br />matching</h1>
+      <p class="lead">The client says “I need ~15 m²” — the system assembles options across every site in seconds.</p>
+      <p class="hint">← → or swipe · space for next</p>
+    </div>
+    <div class="hero-glow" aria-hidden="true"></div>
+  </section>
 
-    <!-- Slide 3: The Solution -->
-    <section class="slide solution">
-      <div class="content">
-        <h2>The Solution</h2>
-        <p>Automated matching across all facilities</p>
-        <div class="config-demo">
-          <div class="request">Client requests: <strong>15m²</strong></div>
-          <div class="range">Search range: <strong>7.5–22.5m²</strong></div>
-          <div class="options">
-            <!-- Configurations inserted by JavaScript -->
+  <!-- 2 Problem -->
+  <section class="slide" data-slide="1">
+    <div class="content">
+      <p class="eyebrow">The problem</p>
+      <h2>Managers get lost in configurations</h2>
+      <p class="lead">A single 15 m² room is rare. More often it’s boxes: 3 + 4 + 8. Searching floors and branches by hand takes forever.</p>
+      <ul class="pain-list">
+        <li>Ballpark requests, not exact square meters</li>
+        <li>One branch can’t see the next branch’s availability</li>
+        <li>The client leaves while you hunt for a combo</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 3 Client request -->
+  <section class="slide" data-slide="2">
+    <div class="content">
+      <p class="eyebrow">Client request</p>
+      <h2>“I need about 15 m²”</h2>
+      <div class="request-panel">
+        <div class="request-input-wrap">
+          <label for="areaInput">Requested area</label>
+          <div class="request-row">
+            <input type="range" id="areaInput" min="5" max="40" value="15" step="1" />
+            <output id="areaValue">15</output>
+            <span>m²</span>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- Slide 4: Multi-Location Aggregation -->
-    <section class="slide aggregation">
-      <div class="content">
-        <h2>All Locations, One View</h2>
-        <p>Aggregate inventory across multiple warehouses</p>
-        <div class="map-demo">
-          <div class="map-placeholder"></div>
-          <div class="legend">
-            <div class="marker available"></div> <span>Available</span>
-            <div class="marker occupied"></div> <span>Occupied</span>
-          </div>
+        <div class="range-badge">
+          Search range ±50%: <strong id="rangeMin">7.5</strong> – <strong id="rangeMax">22.5</strong> m²
         </div>
+        <p class="small">Clients rarely know the exact number — we show everything that falls in range.</p>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Slide 5: Radius Search -->
-    <section class="slide radius">
-      <div class="content">
-        <h2>Radius Search: 10km</h2>
-        <p>Find options near the client’s preferred location</p>
-        <div class="radius-demo">
-          <div class="client-pin"></div>
-          <div class="search-ring"></div>
-          <div class="warehouse-pin" style="top: 30%; left: 40%"></div>
-          <div class="warehouse-pin" style="top: 50%; left: 60%"></div>
-          <div class="warehouse-pin" style="top: 70%; left: 50%"></div>
-        </div>
-      </div>
-    </section>
+  <!-- 4 Configurations -->
+  <section class="slide" data-slide="3">
+    <div class="content wide">
+      <p class="eyebrow">Configuration matching</p>
+      <h2>One room or combined units</h2>
+      <p class="lead">The system scans available units and surfaces the best matches.</p>
+      <div class="config-grid" id="configGrid"></div>
+    </div>
+  </section>
 
-    <!-- Slide 6: Benefits -->
-    <section class="slide benefits">
-      <div class="content">
-        <h2>Benefits</h2>
-        <div class="benefits-grid">
-          <div class="benefit-card">
-            <h3>⏱️ Faster Response</h3>
-            <p>Instant quotes instead of hours or days</p>
-          </div>
-          <div class="benefit-card">
-            <h3>🎯 Higher Conversion</h3>
-            <p>More deals closed with instant options</p>
-          </div>
-          <div class="benefit-card">
-            <h3>📍 Network-wide search</h3>
-            <p>±50% area matching within a 10km radius</p>
-          </div>
-        </div>
+  <!-- 5 Multi-warehouse -->
+  <section class="slide" data-slide="4">
+    <div class="content wide">
+      <p class="eyebrow">Operator-wide inventory</p>
+      <h2>One request, entire network</h2>
+      <p class="lead">No call to head office — inventory is aggregated across locations.</p>
+      <div class="warehouse-list" id="warehouseList"></div>
+    </div>
+  </section>
+
+  <!-- 6 Radius -->
+  <section class="slide" data-slide="5">
+    <div class="content wide">
+      <p class="eyebrow">10 km radius</p>
+      <h2>Near the client — and a bit farther</h2>
+      <p class="lead">In Barcelona, a site one block away is often as good as “right at home.”</p>
+      <div class="map-scene" id="mapScene">
+        <div class="map-ring"></div>
+        <div class="map-client" title="Client location">You</div>
       </div>
-    </section>
+      <div class="radius-legend" id="radiusLegend"></div>
+    </div>
+  </section>
+
+  <!-- 7 Benefits -->
+  <section class="slide" data-slide="6">
+    <div class="content">
+      <p class="eyebrow">Summary</p>
+      <h2>Faster · broader · sharper</h2>
+      <div class="benefits">
+        <article><span>⚡</span><h3>Instant response</h3><p>Not “we’ll call you back tomorrow”</p></article>
+        <article><span>🧩</span><h3>Smart combinations</h3><p>7 + 8 = 15, 3×3 + 4 = 13…</p></article>
+        <article><span>📍</span><h3>Every branch</h3><p>±50% area and 10 km radius</p></article>
+      </div>
+      <p class="brand">Example segment: self-storage · zebrabox.es and peers</p>
+    </div>
+  </section>
+
+  <nav class="nav" aria-label="Slide navigation">
+    <button type="button" id="prevBtn" aria-label="Previous slide">←</button>
+    <button type="button" id="nextBtn" aria-label="Next slide">→</button>
+  </nav>
   </div>
 
   <script src="script.js"></script>
