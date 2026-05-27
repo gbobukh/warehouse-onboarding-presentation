@@ -113,4 +113,4 @@ function displayConfigs() {
     option.className = 'option';
     
     const unitsText = config.units.map(u => `${u}m²`).join(' + ');
-    option.innerHTML = `<strong>${config.total}m²</strong> — ${unitsText
+    option.innerHTML = `<strong>${config.total}m²</strong> — ${unitsText}`;\n    optionsContainer.appendChild(option);\n  });\n}\n\n// Call displayConfigs on page load\ndocument.addEventListener('DOMContentLoaded', displayConfigs);

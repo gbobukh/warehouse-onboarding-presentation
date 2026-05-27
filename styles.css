@@ -134,4 +134,22 @@ strong {
 
 .option:hover {
   background: rgba(0, 120, 255, 0.2);
-  transform: translateY(-
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 120, 255, 0.2);
+}\n\n/* Add animation for slide transitions */\n.slide {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}\n\n.slide.active {
+  opacity: 1;
+  pointer-events: auto;
+}\n\n/* Animation for config options */\n.option {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s ease-out forwards;
+}\n\n.option:nth-child(1) { animation-delay: 0.2s; }
+.option:nth-child(2) { animation-delay: 0.3s; }
+.option:nth-child(3) { animation-delay: 0.4s; }
+.option:nth-child(4) { animation-delay: 0.5s; }
+.option:nth-child(5) { animation-delay: 0.6s; }
+.option:nth-child(6) { animation-delay: 0.7s; }\n\n@keyframes fadeInUp {\n  from {\n    opacity: 0;\n    transform: translateY(20px);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0);\n  }\n}
